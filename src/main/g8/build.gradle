@@ -1,0 +1,42 @@
+plugins {
+    id "net.ltgt.errorprone" version "0.0.8"
+}
+
+apply plugin: 'java'
+apply plugin: 'net.ltgt.errorprone'
+
+sourceCompatibility = $java_version$
+targetCompatibility = $java_version$
+
+group = "$organization$"
+version = "$version$"
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': baseName
+        attributes 'Implementation-Version': version
+        attributes 'Main-Class': '$organization$.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.22'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
+}
+
+configurations.errorprone {
+    resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.15'
+}
